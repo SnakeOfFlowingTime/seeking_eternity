@@ -1,6 +1,6 @@
 Seeking_eternity = {}
 
-local path = minetest.get_modpath("seeking_eternity") .. "/lua/"
+local path = core.get_modpath("seeking_eternity") .. "/lua/"
 
 dofile(path .. "config.lua")
 dofile(path .. "hud.lua")

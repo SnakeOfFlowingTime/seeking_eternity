@@ -3,12 +3,14 @@ Seeking_eternity.hp = {}
 Seeking_eternity.realm = {}
 Seeking_eternity.progress = {}
 
-function Seeking_eternity.update_spiritual_power(player, new_current, new_max)
+function Seeking_eternity.update_spiritual_power(player, new_current)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
     pmeta:set_int("seeking_eternity:current_spiritual_power", new_current)
-    pmeta:set_int("seeking_eternity:max_spiritual_power", new_max)
-    player:hud_change(Seeking_eternity.spiritual_power[name].spiritual_power_hud, "text", string.format("Spiritual Power: %d/%d", new_current, new_max))
+    local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
+
+    Seeking_eternity.spiritual_power[name].current = new_current
+    player:hud_change(Seeking_eternity.spiritual_power[name].spiritual_power_hud, "text", string.format("Spiritual Power: %d/%d", new_current, max))
 end
 
 function Seeking_eternity.update_hp(player)

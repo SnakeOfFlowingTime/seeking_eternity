@@ -138,6 +138,9 @@ end)
 core.register_on_leaveplayer(function(player)
     local name = player:get_player_name()
     Seeking_eternity.hp[name] = nil
+    Seeking_eternity.realm[name] = nil
+    Seeking_eternity.spiritual_power[name] = nil
+    Seeking_eternity.progress[name] = nil
 end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -148,3 +151,27 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
     end)
     return hp_change
 end, pcall)
+
+local timer = 0
+core.register_globalstep(function(dtime)
+    timer = timer + dtime
+    if timer < 1.0 then
+        return
+    end
+    timer = 0
+
+    for i, player in ipairs(core.get_connected_players()) do
+        local name = player:get_player_name()
+        local pmeta = player:get_meta()
+        local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
+        if current_realm == "" then current_realm = "Mortal" end
+
+        local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
+        local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
+
+        if current < max then
+            local new_current = math.min(max, current + Seeking_eternity.realm_stats[current_realm].spiritual_power_regen)
+            Seeking_eternity.update_spiritual_power(player, new_current)
+        end
+    end
+end)

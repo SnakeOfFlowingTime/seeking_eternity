@@ -1,3 +1,4 @@
+-- applies the realm stats
 function Seeking_eternity.apply_realm_stats(player, realm)
     local stats = Seeking_eternity.realm_stats[realm]
 

@@ -1,3 +1,4 @@
+-- breakthrough gui
 function Seeking_eternity.breakthrough_gui(player)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -6,6 +7,7 @@ function Seeking_eternity.breakthrough_gui(player)
     local max_progress = Seeking_eternity.realm_values[current_realm]
     local next_realm = Seeking_eternity.get_next_realm(current_realm)
     
+    -- checks if player meets conditions
     local can_breakthrough = Seeking_eternity.progress_calculator(player, current_realm)
 
     local formspec = "size[6,4.5]" ..
@@ -27,6 +29,7 @@ function Seeking_eternity.breakthrough_gui(player)
     core.show_formspec(name, "seeking_eternity:breakthrough_menu", formspec)
 end
 
+-- technique GUI
 function Seeking_eternity.technique_gui(player)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -35,6 +38,7 @@ function Seeking_eternity.technique_gui(player)
     local techniques = table.concat(unlocked_techniques, ",")
     local selected_index = 1
 
+    -- gets current technique index
     for i, tech in ipairs(unlocked_techniques) do
         if tech == current_technique then
             selected_index = i
@@ -52,11 +56,14 @@ function Seeking_eternity.technique_gui(player)
     core.show_formspec(name, "seeking_eternity:technique_menu", formspec)
 end
 
+-- cultivation GUI
 function Seeking_eternity.cultivation_gui(player)
     local name = player:get_player_name()
     local formspec = "size[6,4.5]" ..
         "real_coordinates[true]" ..
         "label[0.5,0.5;Cultivate]"
+
+    -- checks if player is cultivating
     if not Seeking_eternity.cultivating[name] then
         formspec = formspec .. "button[1.5,3.2;3,0.8;btn_cultivate; Cultivate ]"
     else
@@ -65,8 +72,10 @@ function Seeking_eternity.cultivation_gui(player)
     core.show_formspec(name, "seeking_eternity:cultivation_menu", formspec)
 end
 
+-- passive GUI
 function Seeking_eternity.passive_skill_gui(player)
     local name = player:get_player_name()
+    -- verifies if flight is enabled
     local is_enabled = "false"
     if Seeking_eternity.flying_enabled[name] == true then
         is_enabled = "true"
@@ -77,6 +86,7 @@ function Seeking_eternity.passive_skill_gui(player)
     core.show_formspec(name, "seeking_eternity:passive_skill_menu", formspec)
 end
 
+-- passive GUI backend
 core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "seeking_eternity:passive_skill_menu" then return end
     local name = player:get_player_name()
@@ -87,6 +97,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     end
 end)
 
+-- cultivation GUI backend
 core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "seeking_eternity:cultivation_menu" then return end
     local name = player:get_player_name()
@@ -102,6 +113,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     
 end)
 
+-- technique GUI backend
 core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "seeking_eternity:technique_menu" then return end
 
@@ -112,6 +124,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
    
 end)
 
+-- breakthrough GUI backend
 core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "seeking_eternity:breakthrough_menu" then return false end
 
@@ -122,6 +135,7 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     end
 end)
 
+-- chat command to open passive menu
 core.register_chatcommand("passive", {
     description = "Opens the passive skill menu",
     func = function(name)
@@ -133,6 +147,7 @@ core.register_chatcommand("passive", {
     end
 })
 
+-- chat command to open cultivation menu
 core.register_chatcommand("cultivate", {
     description = "Opens the cultivation menu",
     func = function(name)
@@ -144,6 +159,7 @@ core.register_chatcommand("cultivate", {
     end
 })
 
+-- chat command to open technique menu
 core.register_chatcommand("technique", {
     description = "Opens the technique selection menu",
     func = function(name)
@@ -155,6 +171,7 @@ core.register_chatcommand("technique", {
     end
 })
 
+-- chat command to open breakthrough menu
 core.register_chatcommand("breakthrough", {
     description = "Opens the breakthrough menu",
     func = function(name)

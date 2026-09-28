@@ -1,6 +1,9 @@
+-- keeps track of unlocked_techniques
 Seeking_eternity.unlocked_techniques = {}
+-- keeps track of whether the player is cultivating
 Seeking_eternity.cultivating = {}
 
+-- for changing current technique
 function Seeking_eternity.update_current_technique(player, new_technique)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -8,6 +11,7 @@ function Seeking_eternity.update_current_technique(player, new_technique)
     Seeking_eternity.get_cultivation_modifier(player)
 end
 
+-- gets the next realm in sequence
 function Seeking_eternity.get_next_realm(current_realm)
     for i, realm in ipairs(Seeking_eternity.realm_sequence) do
         if realm == current_realm then
@@ -17,6 +21,7 @@ function Seeking_eternity.get_next_realm(current_realm)
     return nil
 end
 
+-- handles the breakthroughs 
 function Seeking_eternity.update_cultivation_realm(player)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -44,6 +49,7 @@ function Seeking_eternity.update_cultivation_realm(player)
     end
 end
 
+-- checks if foundation is enough to breakthrough
 function Seeking_eternity.progress_calculator(player, realm)
     local pmeta = player:get_meta()
     local current_progress = pmeta:get_int("seeking_eternity:current_progress")
@@ -55,6 +61,7 @@ function Seeking_eternity.progress_calculator(player, realm)
     end
 end
 
+-- handles increasing foundation
 function Seeking_eternity.increase_progress(player, amount)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -72,6 +79,7 @@ function Seeking_eternity.increase_progress(player, amount)
     
 end
 
+-- gets the cultivation modifier
 function Seeking_eternity.get_cultivation_modifier(player)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -99,8 +107,9 @@ function Seeking_eternity.get_cultivation_modifier(player)
     return current_modifier
 end
 
-
+-- handles players joining
 core.register_on_joinplayer(function(player)
+    -- disables default health bar to allow custom one
     player:hud_set_flags({
         healthbar = false,
         breathbar = true
@@ -113,23 +122,29 @@ core.register_on_joinplayer(function(player)
     local current_progress = pmeta:get_int("seeking_eternity:current_progress")
     local current_technique = pmeta:get_string("seeking_eternity:current_technique")
     local unlocked_techniques = core.deserialize(pmeta:get_string("seeking_eternity:unlocked_techniques"))
+
     if current_technique == "" then
         current_technique = "Basic Breathing"
         Seeking_eternity.update_current_technique(player, current_technique)
     end
+
     if not unlocked_techniques then
         Seeking_eternity.unlocked_techniques[name] = {current_technique}
         pmeta:set_string("seeking_eternity:unlocked_techniques", core.serialize(Seeking_eternity.unlocked_techniques[name]))
     end
     
+    -- gets current foundation gain modifier
     local current_modifier = Seeking_eternity.get_cultivation_modifier(player)
+
     if current_progress == 0 then
         pmeta:set_int("seeking_eternity:current_progress", 0)
     end
+
     if cultivation_realm == "" then
         cultivation_realm = "Mortal"
         pmeta:set_string("seeking_eternity:cultivation_realm", "Mortal")
     end
+
     local max_progress = Seeking_eternity.realm_values[pmeta:get_string("seeking_eternity:cultivation_realm")]
     local current_progress = pmeta:get_int("seeking_eternity:current_progress")
     if max == 0 then
@@ -198,8 +213,13 @@ core.register_on_joinplayer(function(player)
             scale = {x = 100, y = 20}
         })
     }
+    -- applies realm stats on joining
     Seeking_eternity.apply_realm_stats(player, cultivation_realm)
+
+    -- defaults cultivating to false
     Seeking_eternity.cultivating[name] = false
+
+    -- handles flight check stuff
     local flying_enabled = pmeta:get_string("seeking_eternity:flying_enabled")
     if flying_enabled == "true" then
         Seeking_eternity.flying_enabled[name] = true
@@ -208,6 +228,7 @@ core.register_on_joinplayer(function(player)
     end
 end)
 
+-- handles players leaving
 core.register_on_leaveplayer(function(player)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -223,6 +244,7 @@ core.register_on_leaveplayer(function(player)
     Seeking_eternity.flying_enabled[name] = nil
 end)
 
+-- custom hp bar stuff
 core.register_on_player_hpchange(function(player, hp_change, reason)
     core.after(0, function()
         if player:is_player() then
@@ -232,7 +254,10 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
     return hp_change
 end, pcall)
 
+-- designated first timer
 local first_timer = 0
+
+-- handles the second by second stuff like SP regen and flight checks
 core.register_globalstep(function(dtime)
     first_timer = first_timer + dtime
     if first_timer < 1.0 then
@@ -248,20 +273,26 @@ core.register_globalstep(function(dtime)
         local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
         local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
 
+        -- flight skill
         Seeking_eternity.true_flight_skill(player)
         
+        -- checks if SP should recharge based on whether the player is cultivating
         if not Seeking_eternity.cultivating[name] then
             if current < max then
             local new_current = math.min(max, current + Seeking_eternity.realm_stats[current_realm].spiritual_power_regen)
             Seeking_eternity.update_spiritual_power(player, new_current)
             end
         end
+
+        -- gets foundation gain modifier to update the hud and stuff
         Seeking_eternity.get_cultivation_modifier(player)
     end
 end)
 
+-- designated second timer (nothing to say about it)
 local second_timer = 0
 
+-- handles the cultivation gain
 core.register_globalstep(function(dtime)
     second_timer = second_timer + dtime
     if second_timer < 10.0 then
@@ -274,5 +305,4 @@ core.register_globalstep(function(dtime)
             Seeking_eternity.increase_progress(player, Seeking_eternity.get_cultivation_modifier(player))
         end
     end
-
-end)        
+end)

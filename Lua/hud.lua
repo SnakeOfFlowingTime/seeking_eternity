@@ -1,9 +1,11 @@
+-- tracking tables
 Seeking_eternity.spiritual_power = {}
 Seeking_eternity.hp = {}
 Seeking_eternity.realm = {}
 Seeking_eternity.progress = {}
 Seeking_eternity.foundation_gain_modifier = {}
 
+-- spiritual power helper function
 function Seeking_eternity.update_spiritual_power(player, new_current)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
@@ -14,6 +16,7 @@ function Seeking_eternity.update_spiritual_power(player, new_current)
     player:hud_change(Seeking_eternity.spiritual_power[name].spiritual_power_hud, "text", string.format("Spiritual Power: %d/%d", new_current, max))
 end
 
+-- hp helper function
 function Seeking_eternity.update_hp(player)
     local name = player:get_player_name()
     local current_hp = player:get_hp()

@@ -1,3 +1,4 @@
+-- debug command to set player foundation (probably could use some of the newer functions i made)
 core.register_chatcommand("setprogress", {
     param = "<amount> [Player_name]",
     description = "Sets current progress",

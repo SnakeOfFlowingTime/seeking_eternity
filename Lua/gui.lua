@@ -52,6 +52,34 @@ function Seeking_eternity.technique_gui(player)
     core.show_formspec(name, "seeking_eternity:technique_menu", formspec)
 end
 
+function Seeking_eternity.cultivation_gui(player)
+    local name = player:get_player_name()
+    local formspec = "size[6,4.5]" ..
+        "real_coordinates[true]" ..
+        "label[0.5,0.5;Cultivate]"
+    if not Seeking_eternity.cultivating[name] then
+        formspec = formspec .. "button[1.5,3.2;3,0.8;btn_cultivate; Cultivate ]"
+    else
+        formspec = formspec .. "button[1.5,3.2;3,0.8;btn_stop_cultivate; Stop Cultivating ]"
+    end
+    core.show_formspec(name, "seeking_eternity:cultivation_menu", formspec)
+end
+
+core.register_on_player_receive_fields(function(player, formname, fields)
+    if formname ~= "seeking_eternity:cultivation_menu" then return end
+    local name = player:get_player_name()
+
+    if fields.btn_cultivate then
+        Seeking_eternity.cultivating[name] = true
+        Seeking_eternity.cultivation_gui(player)
+    end
+    if fields.btn_stop_cultivate then
+        Seeking_eternity.cultivating[name] = false
+        Seeking_eternity.cultivation_gui(player)
+    end
+    
+end)
+
 core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "seeking_eternity:technique_menu" then return end
 
@@ -71,6 +99,17 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     return true
     end
 end)
+
+core.register_chatcommand("cultivate", {
+    description = "Opens the cultivation menu",
+    func = function(name)
+        local player = core.get_player_by_name(name)
+        if player then
+            Seeking_eternity.cultivation_gui(player)
+            return true
+        end
+    end
+})
 
 core.register_chatcommand("technique", {
     description = "Opens the technique selection menu",

@@ -1,4 +1,5 @@
 Seeking_eternity.unlocked_techniques = {}
+Seeking_eternity.cultivating = {}
 
 function Seeking_eternity.update_current_technique(player, new_technique)
     local name = player:get_player_name()
@@ -83,6 +84,7 @@ function Seeking_eternity.get_cultivation_modifier(player)
     local technique_modifier = Seeking_eternity.technique_stats[current_technique].gain_modifier
     local height_modifier = 1.0 * (math.abs(height) / 100)
     local current_modifier = technique_modifier + height_modifier
+    current_modifier = math.round(current_modifier)
 
     if not Seeking_eternity.foundation_gain_modifier[name] then
         Seeking_eternity.foundation_gain_modifier[name] = {}
@@ -197,6 +199,7 @@ core.register_on_joinplayer(function(player)
         })
     }
     Seeking_eternity.apply_realm_stats(player, cultivation_realm)
+    Seeking_eternity.cultivating[name] = {false}
 end)
 
 core.register_on_leaveplayer(function(player)
@@ -217,14 +220,13 @@ core.register_on_player_hpchange(function(player, hp_change, reason)
     return hp_change
 end, pcall)
 
-local timer = 0
+local first_timer = 0
 core.register_globalstep(function(dtime)
-    timer = timer + dtime
-    if timer < 1.0 then
+    first_timer = first_timer + dtime
+    if first_timer < 1.0 then
         return
     end
-    timer = 0
-
+    first_timer = 0
     for i, player in ipairs(core.get_connected_players()) do
         local name = player:get_player_name()
         local pmeta = player:get_meta()
@@ -233,11 +235,29 @@ core.register_globalstep(function(dtime)
 
         local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
         local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
-
-        if current < max then
+        if not Seeking_eternity.cultivating[name] then
+            if current < max then
             local new_current = math.min(max, current + Seeking_eternity.realm_stats[current_realm].spiritual_power_regen)
             Seeking_eternity.update_spiritual_power(player, new_current)
+            end
         end
         Seeking_eternity.get_cultivation_modifier(player)
     end
 end)
+
+local second_timer = 0
+
+core.register_globalstep(function(dtime)
+    second_timer = second_timer + dtime
+    if second_timer < 10.0 then
+        return
+    end
+    second_timer = 0
+    for i, player in ipairs(core.get_connected_players()) do
+        local name = player:get_player_name()
+        if Seeking_eternity.cultivating[name] then
+            Seeking_eternity.increase_progress(player, Seeking_eternity.get_cultivation_modifier(player))
+        end
+    end
+
+end)        

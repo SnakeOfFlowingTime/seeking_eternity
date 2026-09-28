@@ -1,3 +1,12 @@
+Seeking_eternity.unlocked_techniques = {}
+
+function Seeking_eternity.update_current_technique(player, new_technique)
+    local name = player:get_player_name()
+    local pmeta = player:get_meta()
+    pmeta:set_string("seeking_eternity:current_technique", new_technique)
+    Seeking_eternity.get_cultivation_modifier(player)
+end
+
 function Seeking_eternity.get_next_realm(current_realm)
     for i, realm in ipairs(Seeking_eternity.realm_sequence) do
         if realm == current_realm then
@@ -54,9 +63,40 @@ function Seeking_eternity.increase_progress(player, amount)
 
     pmeta:set_int("seeking_eternity:current_progress", new_progress)
     Seeking_eternity.progress[name].current_progress = new_progress
-    player:hud_change(Seeking_eternity.progress[name].progress_hud, "text",
-    string.format("Foundation: %d/%d", pmeta:get_int("seeking_eternity:current_progress"), Seeking_eternity.realm_values[current_realm]))
+    
+    if Seeking_eternity.progress[name].progress_hud then
+        player:hud_change(Seeking_eternity.progress[name].progress_hud, "text",
+        string.format("Foundation: %d/%d", pmeta:get_int("seeking_eternity:current_progress"), Seeking_eternity.realm_values[current_realm]))
+    end
+    
 end
+
+function Seeking_eternity.get_cultivation_modifier(player)
+    local name = player:get_player_name()
+    local pmeta = player:get_meta()
+    local current_technique = pmeta:get_string("seeking_eternity:current_technique")
+    local coords = player:get_pos()
+    local height = coords.y
+    if current_technique == "" then
+        current_technique = "Basic Breathing"
+    end
+    local technique_modifier = Seeking_eternity.technique_stats[current_technique].gain_modifier
+    local height_modifier = 1.0 * (math.abs(height) / 100)
+    local current_modifier = technique_modifier + height_modifier
+
+    if not Seeking_eternity.foundation_gain_modifier[name] then
+        Seeking_eternity.foundation_gain_modifier[name] = {}
+    end
+
+    Seeking_eternity.foundation_gain_modifier[name].current_modifier = current_modifier
+
+    if Seeking_eternity.foundation_gain_modifier[name].gain_modifier_hud then
+        player:hud_change(Seeking_eternity.foundation_gain_modifier[name].gain_modifier_hud,
+        "text", "Cultivation Speed: " .. tostring(current_modifier))
+    end
+    return current_modifier
+end
+
 
 core.register_on_joinplayer(function(player)
     player:hud_set_flags({
@@ -69,6 +109,18 @@ core.register_on_joinplayer(function(player)
     local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
     local cultivation_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
     local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    local current_technique = pmeta:get_string("seeking_eternity:current_technique")
+    local unlocked_techniques = core.deserialize(pmeta:get_string("seeking_eternity:unlocked_techniques"))
+    if current_technique == "" then
+        current_technique = "Basic Breathing"
+        Seeking_eternity.update_current_technique(player, current_technique)
+    end
+    if not unlocked_techniques then
+        Seeking_eternity.unlocked_techniques[name] = {current_technique}
+        pmeta:set_string("seeking_eternity:unlocked_techniques", core.serialize(Seeking_eternity.unlocked_techniques[name]))
+    end
+    
+    local current_modifier = Seeking_eternity.get_cultivation_modifier(player)
     if current_progress == 0 then
         pmeta:set_int("seeking_eternity:current_progress", 0)
     end
@@ -132,6 +184,18 @@ core.register_on_joinplayer(function(player)
             number = 0xFFD700
         })
     }
+    Seeking_eternity.foundation_gain_modifier[name] = {
+        current_modifier = current_modifier,
+        gain_modifier_hud = player:hud_add({
+            hud_elem_type = "text",
+            position = {x = 0.5, y = 0.80},
+            offset = {x = 0,   y = 0},
+            anchor = {x = 0.5, y = 0.5},
+            text = "Cultivation Speed: " .. current_modifier,
+            number = 0xFFFFFF,
+            scale = {x = 100, y = 20}
+        })
+    }
     Seeking_eternity.apply_realm_stats(player, cultivation_realm)
 end)
 
@@ -141,6 +205,7 @@ core.register_on_leaveplayer(function(player)
     Seeking_eternity.realm[name] = nil
     Seeking_eternity.spiritual_power[name] = nil
     Seeking_eternity.progress[name] = nil
+    Seeking_eternity.foundation_gain_modifier[name] = nil
 end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -173,5 +238,6 @@ core.register_globalstep(function(dtime)
             local new_current = math.min(max, current + Seeking_eternity.realm_stats[current_realm].spiritual_power_regen)
             Seeking_eternity.update_spiritual_power(player, new_current)
         end
+        Seeking_eternity.get_cultivation_modifier(player)
     end
 end)

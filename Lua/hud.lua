@@ -2,6 +2,7 @@ Seeking_eternity.spiritual_power = {}
 Seeking_eternity.hp = {}
 Seeking_eternity.realm = {}
 Seeking_eternity.progress = {}
+Seeking_eternity.foundation_gain_modifier = {}
 
 function Seeking_eternity.update_spiritual_power(player, new_current)
     local name = player:get_player_name()

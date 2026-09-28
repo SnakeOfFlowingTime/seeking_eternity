@@ -23,3 +23,6 @@ Seeking_eternity.technique_stats = {
     ["Basic Breathing"] = {gain_modifier = 1},
     ["Advanced Breathing"] = {gain_modifier = 2}
 }
+Seeking_eternity.passive_skills_stats = {
+    ["True Flight"] = {consumption = 4}
+}

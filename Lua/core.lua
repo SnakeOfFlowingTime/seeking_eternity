@@ -199,16 +199,28 @@ core.register_on_joinplayer(function(player)
         })
     }
     Seeking_eternity.apply_realm_stats(player, cultivation_realm)
-    Seeking_eternity.cultivating[name] = {false}
+    Seeking_eternity.cultivating[name] = false
+    local flying_enabled = pmeta:get_string("seeking_eternity:flying_enabled")
+    if flying_enabled == "true" then
+        Seeking_eternity.flying_enabled[name] = true
+    else
+        Seeking_eternity.flying_enabled[name] = false
+    end
 end)
 
 core.register_on_leaveplayer(function(player)
     local name = player:get_player_name()
+    local pmeta = player:get_meta()
+    if Seeking_eternity.flying_enabled[name] ~= nil then
+        pmeta:set_string("seeking_eternity:flying_enabled", tostring(Seeking_eternity.flying_enabled[name]))
+    end
+
     Seeking_eternity.hp[name] = nil
     Seeking_eternity.realm[name] = nil
     Seeking_eternity.spiritual_power[name] = nil
     Seeking_eternity.progress[name] = nil
     Seeking_eternity.foundation_gain_modifier[name] = nil
+    Seeking_eternity.flying_enabled[name] = nil
 end)
 
 core.register_on_player_hpchange(function(player, hp_change, reason)
@@ -235,6 +247,9 @@ core.register_globalstep(function(dtime)
 
         local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
         local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
+
+        Seeking_eternity.true_flight_skill(player)
+        
         if not Seeking_eternity.cultivating[name] then
             if current < max then
             local new_current = math.min(max, current + Seeking_eternity.realm_stats[current_realm].spiritual_power_regen)

@@ -65,6 +65,28 @@ function Seeking_eternity.cultivation_gui(player)
     core.show_formspec(name, "seeking_eternity:cultivation_menu", formspec)
 end
 
+function Seeking_eternity.passive_skill_gui(player)
+    local name = player:get_player_name()
+    local is_enabled = "false"
+    if Seeking_eternity.flying_enabled[name] == true then
+        is_enabled = "true"
+    end
+    local formspec = "size[6,4.5]" ..
+        "real_coordinates[true]" ..
+        "checkbox[0.5,1.7;toggle_flight;Enable Flight;" .. is_enabled .. "]"
+    core.show_formspec(name, "seeking_eternity:passive_skill_menu", formspec)
+end
+
+core.register_on_player_receive_fields(function(player, formname, fields)
+    if formname ~= "seeking_eternity:passive_skill_menu" then return end
+    local name = player:get_player_name()
+
+    if fields.toggle_flight ~= nil then
+        Seeking_eternity.flying_enabled[name] = (fields.toggle_flight == "true")
+        Seeking_eternity.passive_skill_gui(player)
+    end
+end)
+
 core.register_on_player_receive_fields(function(player, formname, fields)
     if formname ~= "seeking_eternity:cultivation_menu" then return end
     local name = player:get_player_name()
@@ -99,6 +121,17 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     return true
     end
 end)
+
+core.register_chatcommand("passive", {
+    description = "Opens the passive skill menu",
+    func = function(name)
+        local player = core.get_player_by_name(name)
+        if player then
+            Seeking_eternity.passive_skill_gui(player)
+            return true
+        end
+    end
+})
 
 core.register_chatcommand("cultivate", {
     description = "Opens the cultivation menu",

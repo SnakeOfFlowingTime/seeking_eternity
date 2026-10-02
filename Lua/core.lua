@@ -8,6 +8,13 @@ function Seeking_eternity.update_current_technique(player, new_technique)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
     pmeta:set_string("seeking_eternity:current_technique", new_technique)
+    for i, n in pairs(Seeking_eternity.unlocked_techniques[name]) do
+        if n == new_technique then
+            return
+        end
+    end
+    table.insert(Seeking_eternity.unlocked_techniques[name], new_technique)
+    pmeta:set_string("seeking_eternity:unlocked_techniques", core.serialize(Seeking_eternity.unlocked_techniques[name]))
     Seeking_eternity.get_cultivation_modifier(player)
 end
 
@@ -91,7 +98,7 @@ function Seeking_eternity.get_cultivation_modifier(player)
     end
     local technique_modifier = Seeking_eternity.technique_stats[current_technique].gain_modifier
     local height_modifier = 1.0 * (math.abs(height) / 100)
-    local current_modifier = technique_modifier + height_modifier
+    local current_modifier = (1 + height_modifier) * technique_modifier
     current_modifier = math.round(current_modifier)
 
     if not Seeking_eternity.foundation_gain_modifier[name] then
@@ -131,6 +138,8 @@ core.register_on_joinplayer(function(player)
     if not unlocked_techniques then
         Seeking_eternity.unlocked_techniques[name] = {current_technique}
         pmeta:set_string("seeking_eternity:unlocked_techniques", core.serialize(Seeking_eternity.unlocked_techniques[name]))
+    else
+        Seeking_eternity.unlocked_techniques[name] = unlocked_techniques
     end
     
     -- gets current foundation gain modifier

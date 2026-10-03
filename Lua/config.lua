@@ -28,7 +28,10 @@ Seeking_eternity.realm_stats = {
 -- technique stats, not much to say
 Seeking_eternity.technique_stats = {
     ["Basic Breathing"] = {gain_modifier = 1},
-    ["Advanced Breathing"] = {gain_modifier = 2}
+    ["Advanced Breathing"] = {gain_modifier = 2},
+    ["Spirit Star Chart"] = {gain_modifier = 3},
+    ["Final Heaven Method"] = {gain_modifier = 5},
+    ["Sutra of No Self"] = {gain_modifier = 10}
 }
 
 -- passive skills stats, not much to say

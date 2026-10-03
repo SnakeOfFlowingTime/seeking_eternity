@@ -132,6 +132,7 @@ core.register_on_joinplayer(function(player)
 
     if current_technique == "" then
         current_technique = "Basic Breathing"
+        Seeking_eternity.unlocked_techniques[name] = {current_technique}
         Seeking_eternity.update_current_technique(player, current_technique)
     end
 

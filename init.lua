@@ -2,6 +2,7 @@ Seeking_eternity = {}
 
 local path = core.get_modpath("seeking_eternity") .. "/lua/"
 
+dofile(path .. "structures.lua")
 dofile(path .. "config.lua")
 dofile(path .. "items.lua")
 dofile(path .. "hud.lua")

@@ -19,10 +19,10 @@ Seeking_eternity.realm_sequence = {
 -- realm stats, not much to say
 Seeking_eternity.realm_stats = {
     ["Mortal"] = {max_hp = 20, speed = 1.0, max_spiritual_power = 0, spiritual_power_regen = 0},
-    ["Early Stage Qi Refiner"] = {max_hp = 50, speed = 1.1, max_spiritual_power = 100, spiritual_power_regen = 1},
-    ["Middle Stage Qi Refiner"] = {max_hp = 100, speed = 1.2, max_spiritual_power = 400, spiritual_power_regen = 4},
-    ["Late Stage Qi Refiner"] = {max_hp = 200, speed = 1.4, max_spiritual_power = 1600, spiritual_power_regen = 16},
-    ["Peak Qi Refiner"] = {max_hp = 500, speed = 2, max_spiritual_power = 6400, spiritual_power_regen = 64}
+    ["Early Stage Qi Refiner"] = {max_hp = 30, speed = 1.1, max_spiritual_power = 100, spiritual_power_regen = 1},
+    ["Middle Stage Qi Refiner"] = {max_hp = 50, speed = 1.2, max_spiritual_power = 400, spiritual_power_regen = 4},
+    ["Late Stage Qi Refiner"] = {max_hp = 80, speed = 1.4, max_spiritual_power = 1600, spiritual_power_regen = 16},
+    ["Peak Qi Refiner"] = {max_hp = 100, speed = 2, max_spiritual_power = 6400, spiritual_power_regen = 64}
 }
 
 -- technique stats, not much to say

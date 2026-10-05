@@ -26,3 +26,10 @@ core.register_craftitem("seeking_eternity:sutra_of_no_self", {
         Seeking_eternity.update_current_technique(player, "Sutra of No Self")
     end
 })
+core.register_craftitem("seeking_eternity:fire_control_mantra", {
+    description = "Fire Control Mantra",
+    inventory_image = "fire_control_mantra.png",
+    on_use = function(itemstack, player, pointed_thing)
+        Seeking_eternity.update_current_technique(player, "Fire Control Mantra")
+    end
+})

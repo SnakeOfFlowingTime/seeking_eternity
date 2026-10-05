@@ -29,6 +29,48 @@ function Seeking_eternity.breakthrough_gui(player)
     core.show_formspec(name, "seeking_eternity:breakthrough_menu", formspec)
 end
 
+-- physique GUI
+function Seeking_eternity.physique_gui(player)
+    local name = player:get_player_name()
+    local pmeta = player:get_meta()
+    local physique = pmeta:get_string("seeking_eternity:physique")
+    local hp_modifier = Seeking_eternity.physique_stats[physique].hp_modifier
+    local speed_modifier = Seeking_eternity.physique_stats[physique].speed_modifier
+    local sp_modifier = Seeking_eternity.physique_stats[physique].max_sp_modifier
+    local sp_regen_modifier = Seeking_eternity.physique_stats[physique].sp_regen_modifier
+
+    local formspec = "size[12,9]" ..
+        "real_coordinates[true]" ..
+        "label[0.5,0.5;Physique: ".. physique .. "]" ..
+        "label[0.5,1.2;Health Modifier: " .. hp_modifier .. "]" ..
+        "label[0.5,1.8;Speed Modifier: " .. speed_modifier .. "]" ..
+        "label[0.5,2.4;Spiritual Power Modifier: " .. sp_modifier .. "]" ..
+        "label[0.5,3;Spiritual Power Regeneration Modifier: " .. sp_regen_modifier .. "]"
+    
+    core.show_formspec(name, "seeking_eternity:physique_menu", formspec)
+end
+
+-- bloodline GUI
+function Seeking_eternity.bloodline_gui(player)
+    local name = player:get_player_name()
+    local pmeta = player:get_meta()
+    local bloodline = pmeta:get_string("seeking_eternity:bloodline")
+    local hp_modifier = Seeking_eternity.bloodline_stats[bloodline].hp_modifier
+    local speed_modifier = Seeking_eternity.bloodline_stats[bloodline].speed_modifier
+    local sp_modifier = Seeking_eternity.bloodline_stats[bloodline].max_sp_modifier
+    local sp_regen_modifier = Seeking_eternity.bloodline_stats[bloodline].sp_regen_modifier
+
+    local formspec = "size[12,9]" ..
+        "real_coordinates[true]" ..
+        "label[0.5,0.5;Bloodline: ".. bloodline .. "]" ..
+        "label[0.5,1.2;Health Modifier: " .. hp_modifier .. "]" ..
+        "label[0.5,1.8;Speed Modifier: " .. speed_modifier .. "]" ..
+        "label[0.5,2.4;Spiritual Power Modifier: " .. sp_modifier .. "]" ..
+        "label[0.5,3;Spiritual Power Regeneration Modifier: " .. sp_regen_modifier .. "]"
+    
+    core.show_formspec(name, "seeking_eternity:bloodline_menu", formspec)
+end
+
 -- technique GUI
 function Seeking_eternity.technique_gui(player)
     local name = player:get_player_name()
@@ -134,6 +176,30 @@ core.register_on_player_receive_fields(function(player, formname, fields)
     return true
     end
 end)
+
+-- chat command to open physique menu
+core.register_chatcommand("physique", {
+    description = "Opens the physique menu",
+    func = function(name)
+        local player = core.get_player_by_name(name)
+        if player then
+            Seeking_eternity.physique_gui(player)
+            return true
+        end
+    end
+})
+
+-- chat command to open bloodline menu
+core.register_chatcommand("bloodline", {
+    description = "Opens the bloodline menu",
+    func = function(name)
+        local player = core.get_player_by_name(name)
+        if player then
+            Seeking_eternity.bloodline_gui(player)
+            return true
+        end
+    end
+})
 
 -- chat command to open passive menu
 core.register_chatcommand("passive", {

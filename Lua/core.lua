@@ -18,6 +18,22 @@ function Seeking_eternity.update_current_technique(player, new_technique)
     Seeking_eternity.get_cultivation_modifier(player)
 end
 
+function Seeking_eternity.update_current_physique(player, physique)
+    local pmeta = player:get_meta()
+    local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
+    pmeta:set_string("seeking_eternity:physique", physique)
+
+    Seeking_eternity.apply_realm_stats(player, current_realm)
+end
+
+function Seeking_eternity.update_current_bloodline(player, bloodline)
+    local pmeta = player:get_meta()
+    local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
+    pmeta:set_string("seeking_eternity:bloodline", bloodline)
+
+    Seeking_eternity.apply_realm_stats(player, current_realm)
+end
+
 -- gets the next realm in sequence
 function Seeking_eternity.get_next_realm(current_realm)
     for i, realm in ipairs(Seeking_eternity.realm_sequence) do
@@ -93,12 +109,35 @@ function Seeking_eternity.get_cultivation_modifier(player)
     local current_technique = pmeta:get_string("seeking_eternity:current_technique")
     local coords = player:get_pos()
     local height = coords.y
+    local physique = pmeta:get_string("seeking_eternity:physique")
+    local bloodline = pmeta:get_string("seeking_eternity:bloodline")
+    local physique_affinity = Seeking_eternity.physique_stats[physique].affinity
+    -- these three if statements server to make sure a player doesn't get the max bonus for three nils affinity
+    if not physique_affinity then
+        physique_affinity = 1
+    end
+    local bloodline_affinity = Seeking_eternity.bloodline_stats[bloodline].affinity
+    if not bloodline_affinity then
+        bloodline_affinity = 2
+    end
+    local technique_affinity = Seeking_eternity.technique_stats[current_technique].affinity
+    if not technique_affinity then
+        technique_affinity = 3
+    end
     if current_technique == "" then
         current_technique = "Basic Breathing"
     end
+    local affinity_modifier = 1
+    if physique_affinity == bloodline_affinity and bloodline_affinity == technique_affinity then
+        affinity_modifier = 4
+    elseif physique_affinity == bloodline_affinity or
+    physique_affinity == technique_affinity or
+    bloodline_affinity == technique_affinity then
+        affinity_modifier = 2
+    end
     local technique_modifier = Seeking_eternity.technique_stats[current_technique].gain_modifier
     local height_modifier = 1.0 * (math.abs(height) / 100)
-    local current_modifier = (1 + height_modifier) * technique_modifier
+    local current_modifier = (1 + height_modifier) * (technique_modifier * affinity_modifier)
     current_modifier = math.round(current_modifier)
 
     if not Seeking_eternity.foundation_gain_modifier[name] then
@@ -128,6 +167,17 @@ core.register_on_joinplayer(function(player)
     local cultivation_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
     local current_progress = pmeta:get_int("seeking_eternity:current_progress")
     local current_technique = pmeta:get_string("seeking_eternity:current_technique")
+    local current_physique = pmeta:get_string("seeking_eternity:physique")
+    if current_physique == "" then
+        current_physique = "Mortal Physique"
+        pmeta:set_string("seeking_eternity:physique", "Mortal Physique")
+    end
+
+    local current_bloodline = pmeta:get_string("seeking_eternity:bloodline")
+    if current_bloodline == "" then
+        current_bloodline = "Human Bloodline"
+        pmeta:set_string("seeking_eternity:bloodline", "Human Bloodline")
+    end
     local unlocked_techniques = core.deserialize(pmeta:get_string("seeking_eternity:unlocked_techniques"))
 
     if current_technique == "" then
@@ -156,7 +206,7 @@ core.register_on_joinplayer(function(player)
     end
 
     local max_progress = Seeking_eternity.realm_values[pmeta:get_string("seeking_eternity:cultivation_realm")]
-    local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    current_progress = pmeta:get_int("seeking_eternity:current_progress")
     if max == 0 then
         pmeta:set_int("seeking_eternity:current_spiritual_power", 0)
         pmeta:set_int("seeking_eternity:max_spiritual_power", 0)
@@ -282,6 +332,10 @@ core.register_globalstep(function(dtime)
 
         local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
         local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
+        local physique = pmeta:get_string("seeking_eternity:physique")
+        local bloodline = pmeta:get_string("seeking_eternity:bloodline")
+        local sp_regen_modifier = Seeking_eternity.physique_stats[physique].sp_regen_modifier *
+        Seeking_eternity.bloodline_stats[bloodline].sp_regen_modifier
 
         -- flight skill
         Seeking_eternity.true_flight_skill(player)
@@ -289,7 +343,7 @@ core.register_globalstep(function(dtime)
         -- checks if SP should recharge based on whether the player is cultivating
         if not Seeking_eternity.cultivating[name] then
             if current < max then
-            local new_current = math.min(max, current + Seeking_eternity.realm_stats[current_realm].spiritual_power_regen)
+            local new_current = math.min(max, current + (Seeking_eternity.realm_stats[current_realm].spiritual_power_regen * sp_regen_modifier))
             Seeking_eternity.update_spiritual_power(player, new_current)
             end
         end

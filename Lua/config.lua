@@ -27,11 +27,23 @@ Seeking_eternity.realm_stats = {
 
 -- technique stats, not much to say
 Seeking_eternity.technique_stats = {
-    ["Basic Breathing"] = {gain_modifier = 1},
-    ["Advanced Breathing"] = {gain_modifier = 2},
-    ["Spirit Star Chart"] = {gain_modifier = 3},
-    ["Final Heaven Method"] = {gain_modifier = 5},
-    ["Sutra of No Self"] = {gain_modifier = 10}
+    ["Basic Breathing"] = {gain_modifier = 1, affinity = nil},
+    ["Advanced Breathing"] = {gain_modifier = 2, affinity = nil},
+    ["Fire Control Mantra"] = {gain_modifier = 2, affinity = "Fire"},
+    ["Spirit Star Chart"] = {gain_modifier = 3, affinity = "Star"},
+    ["Final Heaven Method"] = {gain_modifier = 5, affinity = "Heaven"},
+    ["Sutra of No Self"] = {gain_modifier = 10, affinity = "Soul"}
+}
+
+Seeking_eternity.bloodline_stats = {
+    ["Human Bloodline"] = {hp_modifier = 1, speed_modifier = 1, max_sp_modifier = 1, sp_regen_modifier = 1, affinity = nil},
+    ["Pseudo-First Tier Fire Fox Bloodline"] = {hp_modifier = 1.5, speed_modifier = 1.4, max_sp_modifier = 1.2, sp_regen_modifier = 1.1, affinity = "Fire"}
+}
+
+Seeking_eternity.physique_stats = {
+    ["Mortal Physique"] = {hp_modifier = 1, speed_modifier = 1, max_sp_modifier = 1, sp_regen_modifier = 1, affinity = nil},
+    ["Iron Bone Body"] = {hp_modifier = 1.2, speed_modifier = 1, max_sp_modifier = 1, sp_regen_modifier = 1, affinity = "Metal"},
+    ["Burning Heart Physique"] = {hp_modifier = 1.1, speed_modifier = 1.1, max_sp_modifier = 1, sp_regen_modifier = 1.1, affinity = "Fire"}
 }
 
 -- passive skills stats, not much to say

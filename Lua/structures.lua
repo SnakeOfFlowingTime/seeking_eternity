@@ -1,6 +1,10 @@
 local loot_pool = {
     ["Mortal"]= {
-        {name = "seeking_eternity:advanced_breathing_manual", min = 1, max = 1}
+        {name = "seeking_eternity:advanced_breathing_manual", min = 1, max = 1},
+        {name = "seeking_eternity:fire_control_mantra", min = 1, max = 1},
+        {name = "seeking_eternity:iron_bone_body", min = 1, max = 1},
+        {name = "seeking_eternity:pseudo_first_tier_fire_fox_bloodline", min = 1, max = 1},
+        {name = "seeking_eternity:burning_heart_physique", min = 1, max = 1},
     },
     ["Earthly"] = {
         {name = "seeking_eternity:spirit_star_chart", min = 1, max = 1}
@@ -19,7 +23,7 @@ local path = core.get_modpath("seeking_eternity") .. "/schematics/"
 core.register_on_generated(function(minp, maxp, blockseed)
     local pr = PseudoRandom(blockseed)
 
-    if pr:next(1, 10) ~= 1 then return end
+    if pr:next(1, 100) ~= 1 then return end
 
     local x = pr:next(minp.x, maxp.x)
     local z = pr:next(minp.z, maxp.z)

@@ -31,7 +31,8 @@ core.register_chatcommand("setprogress", {
         pmeta:set_string("seeking_eternity:current_progress", amount)
         if Seeking_eternity.progress[target_name] then
             Seeking_eternity.progress[target_name].current_progress = tonumber(amount)
-            target_player:hud_change(Seeking_eternity.progress[target_name].progress_hud, "text", string.format("Foundation: %d/%d", tonumber(amount), max_progress))
+            target_player:hud_change(Seeking_eternity.progress[target_name].progress_hud, "text",
+            string.format("Foundation: " .. amount .. "/" .. tostring(max_progress)))
         end
         return true
     end

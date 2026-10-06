@@ -49,7 +49,7 @@ function Seeking_eternity.true_flight_skill(player)
     -- applies flight consumption 
     if privs.fly and is_airborn and velocity.y >= -1.0 and flying_enabled then
         flying = true
-        local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
+        local current = tonumber(pmeta:get_string("seeking_eternity:current_spiritual_power"))
         local drain = Seeking_eternity.passive_skills_stats["True Flight"].consumption
         
         -- for fast flight
@@ -108,7 +108,7 @@ function Seeking_eternity.speed_boost(player)
     end
 
     if is_enabled then
-        local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
+        local current = tonumber(pmeta:get_string("seeking_eternity:current_spiritual_power"))
         local drain = Seeking_eternity.passive_skills_stats["Speed Boost"].consumption
 
         local new_current = math.max(0, current - drain)

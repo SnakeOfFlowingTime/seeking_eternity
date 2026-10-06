@@ -10,7 +10,7 @@ function Seeking_eternity.breakthrough_gui(player)
     -- checks if player meets conditions
     local can_breakthrough = Seeking_eternity.progress_calculator(player, current_realm)
 
-    local formspec = "size[6,4.5]" ..
+    local formspec = "size[12,9]" ..
         "real_coordinates[true]" ..
         "label[0.5,0.5;Cultivation Status]" ..
         "label[0.5,1.2;Current Realm: " .. current_realm .. "]" ..
@@ -117,14 +117,32 @@ end
 -- passive GUI
 function Seeking_eternity.passive_skill_gui(player)
     local name = player:get_player_name()
+    local pmeta = player:get_meta()
+    local realm = pmeta:get_string("seeking_eternity:cultivation_realm")
+    local realm_index = 1
+    for i, n in ipairs(Seeking_eternity.realm_sequence) do
+        if realm == n then
+            realm_index = i
+        end
+    end
+
     -- verifies if flight is enabled
     local is_enabled = "false"
     if Seeking_eternity.flying_enabled[name] == true then
         is_enabled = "true"
     end
-    local formspec = "size[6,4.5]" ..
-        "real_coordinates[true]" ..
-        "checkbox[0.5,1.7;toggle_flight;Enable Flight;" .. is_enabled .. "]"
+    local formspec = "size[12,9]" ..
+        "real_coordinates[true]"
+    if realm_index > 1 then
+        formspec = formspec .. "checkbox[0.5,1.2;toggle_flight;Enable Flight;" .. is_enabled .. "]"
+    end
+    local speed_boost_enabled = "false"
+    if Seeking_eternity.speed_boost_enabled[name] == true then
+        speed_boost_enabled = "true"
+    end
+    if realm_index >= 6 then
+        formspec = formspec .. "checkbox[0.5,1.8;toggle_speed_boost;Enable Speed Boost;" .. speed_boost_enabled .. "]"
+    end
     core.show_formspec(name, "seeking_eternity:passive_skill_menu", formspec)
 end
 
@@ -135,6 +153,11 @@ core.register_on_player_receive_fields(function(player, formname, fields)
 
     if fields.toggle_flight ~= nil then
         Seeking_eternity.flying_enabled[name] = (fields.toggle_flight == "true")
+        Seeking_eternity.passive_skill_gui(player)
+    end
+
+    if fields.toggle_speed_boost ~= nil then
+        Seeking_eternity.speed_boost_enabled[name] = (fields.toggle_speed_boost == "true")
         Seeking_eternity.passive_skill_gui(player)
     end
 end)

@@ -286,6 +286,13 @@ core.register_on_joinplayer(function(player)
     else
         Seeking_eternity.flying_enabled[name] = false
     end
+
+    local speed_boost_enabled = pmeta:get_string("seeking_eternity:speed_boost_enabled")
+    if speed_boost_enabled == "true" then
+        Seeking_eternity.speed_boost_enabled[name] = true
+    else
+        Seeking_eternity.speed_boost_enabled[name] = false
+    end
 end)
 
 -- handles players leaving
@@ -295,6 +302,9 @@ core.register_on_leaveplayer(function(player)
     if Seeking_eternity.flying_enabled[name] ~= nil then
         pmeta:set_string("seeking_eternity:flying_enabled", tostring(Seeking_eternity.flying_enabled[name]))
     end
+    if Seeking_eternity.speed_boost_enabled[name] ~= nil then
+        pmeta:set_string("seeking_eternity:speed_boost_enabled", tostring(Seeking_eternity.speed_boost_enabled[name]))
+    end
 
     Seeking_eternity.hp[name] = nil
     Seeking_eternity.realm[name] = nil
@@ -302,6 +312,7 @@ core.register_on_leaveplayer(function(player)
     Seeking_eternity.progress[name] = nil
     Seeking_eternity.foundation_gain_modifier[name] = nil
     Seeking_eternity.flying_enabled[name] = nil
+    Seeking_eternity.speed_boost_enabled[name] = nil
 end)
 
 -- custom hp bar stuff
@@ -339,6 +350,8 @@ core.register_globalstep(function(dtime)
 
         -- flight skill
         Seeking_eternity.true_flight_skill(player)
+
+        Seeking_eternity.speed_boost(player)
         
         -- checks if SP should recharge based on whether the player is cultivating
         if not Seeking_eternity.cultivating[name] then

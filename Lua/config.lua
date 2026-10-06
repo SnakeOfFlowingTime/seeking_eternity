@@ -9,6 +9,10 @@ Seeking_eternity.realm_values = {
     ["Middle Stage Foundation Establishment"] = 16000000,
     ["Late Stage Foundation Establishment"] = 64000000,
     ["Peak Foundation Establishment"] = 1000000000,
+    ["Early Stage Golden Core"] = 4000000000,
+    ["Middle Stage Golden Core"] = 16000000000,
+    ["Late Stage Golden Core"] = 64000000000,
+    ["Peak Golden Core"] = 1000000000000,
 }
 
 -- order of the realms
@@ -22,6 +26,10 @@ Seeking_eternity.realm_sequence = {
     "Middle Stage Foundation Establishment",
     "Late Stage Foundation Establishment",
     "Peak Foundation Establishment",
+    "Early Stage Golden Core",
+    "Middle Stage Golden Core",
+    "Late Stage Golden Core",
+    "Peak Golden Core"
 }
 
 -- realm stats, not much to say
@@ -35,6 +43,10 @@ Seeking_eternity.realm_stats = {
     ["Middle Stage Foundation Establishment"] = {max_hp = 500, speed = 3.5, max_spiritual_power = 400000, spiritual_power_regen = 4000},
     ["Late Stage Foundation Establishment"] = {max_hp = 800, speed = 4.5, max_spiritual_power = 1600000, spiritual_power_regen = 16000},
     ["Peak Foundation Establishment"] = {max_hp = 1000, speed = 5, max_spiritual_power = 6400000, spiritual_power_regen = 64000},
+    ["Early Stage Golden Core"] = {max_hp = 3000, speed = 7.5, max_spiritual_power = 100000000, spiritual_power_regen = 1000000},
+    ["Middle Stage Golden Core"] = {max_hp = 5000, speed = 8, max_spiritual_power = 400000000, spiritual_power_regen = 4000000},
+    ["Late Stage Golden Core"] = {max_hp = 8000, speed = 9, max_spiritual_power = 1600000000, spiritual_power_regen = 16000000},
+    ["Peak Golden Core"] = {max_hp = 10000, speed = 10, max_spiritual_power = 6400000000, spiritual_power_regen = 64000000},
 }
 
 -- technique stats, not much to say

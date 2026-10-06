@@ -9,7 +9,10 @@ core.register_chatcommand("setprogress", {
             return false, "Amount missing"
         end
 
-        local amount = tonumber(amount_str)
+        local amount = amount_str
+        if tonumber(amount) == nil then
+            return false, "Invalid Amount"
+        end
 
         if target_name == "" then
             target_name = name
@@ -25,10 +28,10 @@ core.register_chatcommand("setprogress", {
         local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
         local max_progress = Seeking_eternity.realm_values[current_realm]
         
-        pmeta:set_int("seeking_eternity:current_progress", amount)
+        pmeta:set_string("seeking_eternity:current_progress", amount)
         if Seeking_eternity.progress[target_name] then
-            Seeking_eternity.progress[target_name].current_progress = amount
-            target_player:hud_change(Seeking_eternity.progress[target_name].progress_hud, "text", string.format("Foundation: %d/%d", amount, max_progress))
+            Seeking_eternity.progress[target_name].current_progress = tonumber(amount)
+            target_player:hud_change(Seeking_eternity.progress[target_name].progress_hud, "text", string.format("Foundation: %d/%d", tonumber(amount), max_progress))
         end
         return true
     end

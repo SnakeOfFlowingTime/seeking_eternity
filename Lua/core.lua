@@ -50,9 +50,9 @@ function Seeking_eternity.update_cultivation_realm(player)
     local pmeta = player:get_meta()
     local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
     local next_realm = Seeking_eternity.get_next_realm(current_realm)
-    local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    local current_progress = tonumber(pmeta:get_string("seeking_eternity:current_progress"))
     if Seeking_eternity.progress_calculator(player, current_realm) and next_realm then
-        pmeta:set_int("seeking_eternity:current_progress", current_progress - Seeking_eternity.realm_values[current_realm])
+        pmeta:set_string("seeking_eternity:current_progress", tostring(current_progress - Seeking_eternity.realm_values[current_realm]))
         pmeta:set_string("seeking_eternity:cultivation_realm", next_realm)
 
         local stats = Seeking_eternity.realm_stats[next_realm]
@@ -60,12 +60,12 @@ function Seeking_eternity.update_cultivation_realm(player)
         Seeking_eternity.spiritual_power[name].max_spiritual_power = stats.max_spiritual_power
 
         Seeking_eternity.realm[name].cultivation_realm = next_realm
-        Seeking_eternity.progress[name].current_progress = pmeta:get_int("seeking_eternity:current_progress")
+        Seeking_eternity.progress[name].current_progress = tonumber(pmeta:get_string("seeking_eternity:current_progress"))
         Seeking_eternity.progress[name].max_progress = Seeking_eternity.realm_values[next_realm]
 
         player:hud_change(Seeking_eternity.realm[name].realm_hud, "text", next_realm)
         player:hud_change(Seeking_eternity.progress[name].progress_hud, "text",
-        string.format("Foundation: %d/%d", pmeta:get_int("seeking_eternity:current_progress"), Seeking_eternity.realm_values[next_realm]))
+        string.format("Foundation: %d/%d", tonumber(pmeta:get_string("seeking_eternity:current_progress")), Seeking_eternity.realm_values[next_realm]))
         player:hud_change(Seeking_eternity.spiritual_power[name].spiritual_power_hud, "text",
         string.format("Spiritual Power: %d/%d", pmeta:get_int("seeking_eternity:current_spiritual_power"), pmeta:get_int("seeking_eternity:max_spiritual_power")))
         Seeking_eternity.apply_realm_stats(player, next_realm)
@@ -75,7 +75,7 @@ end
 -- checks if foundation is enough to breakthrough
 function Seeking_eternity.progress_calculator(player, realm)
     local pmeta = player:get_meta()
-    local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    local current_progress = tonumber(pmeta:get_string("seeking_eternity:current_progress"))
     local max_progress = Seeking_eternity.realm_values[realm]
     if current_progress >= max_progress then
         return true
@@ -88,16 +88,16 @@ end
 function Seeking_eternity.increase_progress(player, amount)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
-    local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    local current_progress = tonumber(pmeta:get_string("seeking_eternity:current_progress"))
     local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
     local new_progress = current_progress + amount
 
-    pmeta:set_int("seeking_eternity:current_progress", new_progress)
+    pmeta:set_string("seeking_eternity:current_progress", tostring(new_progress))
     Seeking_eternity.progress[name].current_progress = new_progress
     
     if Seeking_eternity.progress[name].progress_hud then
         player:hud_change(Seeking_eternity.progress[name].progress_hud, "text",
-        string.format("Foundation: %d/%d", pmeta:get_int("seeking_eternity:current_progress"), Seeking_eternity.realm_values[current_realm]))
+        string.format("Foundation: %d/%d", tonumber(pmeta:get_string("seeking_eternity:current_progress")), Seeking_eternity.realm_values[current_realm]))
     end
     
 end
@@ -165,7 +165,7 @@ core.register_on_joinplayer(function(player)
     local current = pmeta:get_int("seeking_eternity:current_spiritual_power")
     local max = pmeta:get_int("seeking_eternity:max_spiritual_power")
     local cultivation_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
-    local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    local current_progress = pmeta:get_string("seeking_eternity:current_progress")
     local current_technique = pmeta:get_string("seeking_eternity:current_technique")
     local current_physique = pmeta:get_string("seeking_eternity:physique")
     if current_physique == "" then
@@ -196,8 +196,8 @@ core.register_on_joinplayer(function(player)
     -- gets current foundation gain modifier
     local current_modifier = Seeking_eternity.get_cultivation_modifier(player)
 
-    if current_progress == 0 then
-        pmeta:set_int("seeking_eternity:current_progress", 0)
+    if current_progress == "" then
+        pmeta:set_string("seeking_eternity:current_progress", "0")
     end
 
     if cultivation_realm == "" then
@@ -250,7 +250,7 @@ core.register_on_joinplayer(function(player)
         })
     }
     Seeking_eternity.progress[name] = {
-        current_progress = pmeta:get_int("seeking_eternity:current_progress"),
+        current_progress = tonumber(pmeta:get_string("seeking_eternity:current_progress")),
         max_progress = max_progress,
         progress_hud = player:hud_add({
             hud_elem_type = "text",

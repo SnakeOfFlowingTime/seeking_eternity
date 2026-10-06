@@ -3,7 +3,7 @@ function Seeking_eternity.breakthrough_gui(player)
     local name = player:get_player_name()
     local pmeta = player:get_meta()
     local current_realm = pmeta:get_string("seeking_eternity:cultivation_realm")
-    local current_progress = pmeta:get_int("seeking_eternity:current_progress")
+    local current_progress = tonumber(pmeta:get_string("seeking_eternity:current_progress"))
     local max_progress = Seeking_eternity.realm_values[current_realm]
     local next_realm = Seeking_eternity.get_next_realm(current_realm)
     
